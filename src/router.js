@@ -6,7 +6,9 @@ import Register from './components/Register.vue'
 import Verify from './components/Verify.vue'
 import Invite from './components/Invite.vue'
 import CreateBill from './components/CreateBill'
+import MyBill from './components/MyBill'
 import Bills from './components/Bills'
+import NotFound from './components/NotFound'
 import ViewUsers from './components/Admin/ViewUsers'
 import AllBills from './components/Admin/AllBills'
 import Axios from 'axios'
@@ -61,6 +63,23 @@ const router  = new Router({
             params: true
 
         },
+
+        {
+            path: '/bill/show/:code',
+            name: 'MyBill',
+            component: MyBill,
+            props: true,
+            params: true
+
+        },
+
+        {
+            path: '*',
+            name: 'NotFound',
+            component: NotFound,
+        },
+
+
         ...middleware('require-auth', [
 
             {

@@ -1,5 +1,5 @@
 <template>
-    <div class="col-lg-6 col-sm-12 " style="margin: 0px auto" id = "here">
+    <div class="col-lg-6 col-sm-12 col-sm-8" style="margin: 0px auto" id = "here">
         <!--0facf3-->
 
 
@@ -32,8 +32,9 @@
                 </div>
 
                 <div class="form-group col-lg-6 " style="margin: 10px auto">
-                    <label class="typo__label">Add Attendees </label>
-                    <multiselect v-model="users" tag-placeholder="Add this as new tag" placeholder="Search or add a user" label="name" track-by="id"
+                    <label class="typo__label">Add Users </label>
+
+                    <multiselect v-model="emails" tag-placeholder="Add this as new tag" placeholder="Search or add a user"
                                  :options="options" :multiple="true" :taggable="true" @tag="addTag"></multiselect>
 
                 </div>
@@ -48,21 +49,21 @@
                     <strong>Oh snap! </strong> {{error_message}}.
                 </div>
 
-                <div v-for="val in users" class="form-group col-lg-6" style="margin: 10px auto">
+                <div v-for="email in emails" class="form-group col-lg-6" style="margin: 10px auto">
 
-                    <h6 style="font-weight: bold" v-if="val.id !== user_id">{{val.name}}</h6>
+                    <h6 style="font-weight: bold" v-if="email !== user_email">{{email}}</h6>
                     <h6 style="font-weight: bold" v-else>You</h6>
 
                     <label>Products:</label>
                     <div v-for="product, key in products" class="row">
 
-                        <input v-if="product.user_id === val.id" type="text"  class="form-control form-round col-5 mb-1 mr-1" v-model= "product.name"   placeholder="Product" >
-                        <input v-if="product.user_id === val.id" type="number"  class="form-control form-round col-4 mb-1" v-model ="product.price"  placeholder="Amount" >
-                        <a @click="removeProduct(key)" title="Remove Item" v-if="product.user_id === val.id" class="item-remove col-2" style="margin-top: 5px"><i class="ti-close"></i></a>
+                        <input v-if="product.email === email" type="text"  class="form-control form-round col-5 mb-1 mr-1" v-model= "product.name"   placeholder="Product" >
+                        <input v-if="product.email === email" type="number"  class="form-control form-round col-4 mb-1" v-model ="product.price"  placeholder="Amount" >
+                        <a @click="removeProduct(key)" title="Remove Item" v-if="product.email === email" class="item-remove col-2" style="margin-top: 5px"><i class="ti-close"></i></a>
                         <!--<input  type="hidden"  class="form-control col-6" v-model="product.user_id"  placeholder="Amount" >-->
                     </div>
 
-                    <button class="mt-3 btn btn-sm btn-round btn-secondary" @click="addMoreProduct(val.id)"> <span class="fa fa-plus"></span> Add More Product</button>
+                    <button class="mt-3 btn btn-sm btn-round btn-secondary" @click="addMoreProduct(email)"> <span class="fa fa-plus"></span> Add More Product</button>
                     <hr>
 
                 </div>
@@ -91,7 +92,7 @@
 
                 <div v-if="split_method === amount_rep" v-for="val in splits" class="form-group col-lg-6" style="margin: 10px auto">
 
-                    <h6 style="font-weight: bold" v-if="val.user_id !== user_id">{{val.name}}</h6>
+                    <h6 style="font-weight: bold" v-if="val.email !== user_email">{{val.email}}</h6>
                     <h6 style="font-weight: bold" v-else>You</h6>
 
                     <div class="input-group">
@@ -104,7 +105,7 @@
                 </div>
                 <div v-if="split_method === percentage_rep" v-for="val in splits" class="form-group col-lg-6" style="margin: 10px auto">
 
-                    <h6 style="font-weight: bold" v-if="val.user_id !== user_id">{{val.name}}</h6>
+                    <h6 style="font-weight: bold" v-if="val.email !== user_email">{{val.email}}</h6>
                     <h6 style="font-weight: bold" v-else>You</h6>
 
                     <div class="input-group">
@@ -136,7 +137,7 @@
 
                 <div v-for="val in splits" class="form-group col-lg-6" style="margin: 10px auto">
 
-                    <h6 style="font-weight: bold" v-if="val.user_id !== user_id">{{val.name}}</h6>
+                    <h6 style="font-weight: bold" v-if="val.email !== user_email">{{val.email}}</h6>
                     <h6 style="font-weight: bold" v-else>You</h6>
 
                     <label class="mb-2">Products</label>
@@ -144,19 +145,19 @@
 
                         <ul v-for="product in products"  class="list-unstyled">
 
-                            <li style="max-width: 100%" class=" mr-50" v-if="product.user_id === val.user_id">{{product.name | capitalize}}, <mark><b>N{{product.price}}</b> </mark></li>
+                            <li style="max-width: 100%" class=" mr-50" v-if="product.email === val.email">{{product.name | capitalize}}, <mark><b>N{{product.price}}</b> </mark></li>
                         </ul>
 
                     </div>
 
                     <div class="mt-10">
-                        <h6 v-if="split_method === amount_rep && val.user_id !== user_id" style="color: grey">
+                        <h6 v-if="split_method === amount_rep && val.email !== user_email" style="color: grey">
                             {{val.name}} is to pay <b>N{{val.amount}}</b>
                         </h6>
-                        <h6 v-else-if="split_method === amount_rep && val.user_id === user_id" style="color: grey">
+                        <h6 v-else-if="split_method === amount_rep && val.email === user_email" style="color: grey">
                             You are to pay <b>N{{val.amount}}</b>
                         </h6>
-                        <h6 v-else-if="split_method === percentage_rep && val.user_id !== user_id" style="color: grey">
+                        <h6 v-else-if="split_method === percentage_rep && val.email !== user_email" style="color: grey">
                             {{val.name}} is to pay <b>{{val.percentage}}%</b>
                         </h6>
                         <h6 v-else style="color: grey">
@@ -204,7 +205,7 @@
         info: toast,
         warn: toast
     };
-    Vue.use(VueNotifications, options)
+    Vue.use(VueNotifications, options);
 
 
     export default {
@@ -215,6 +216,7 @@
             return{
 
                 users: [],
+                emails: [],
                 splits: [],
                 bill_name: '',
                 split_method: 'percentage',
@@ -227,7 +229,9 @@
                 users_id : null,
                 errors: {},
                 error_message: '',
-                user_id: parseInt(localStorage.getItem('user_id'))
+                user_id: parseInt(localStorage.getItem('user_id')),
+                user_email: JSON.parse(localStorage.getItem('user')).email
+
 
             }
         },
@@ -242,18 +246,23 @@
 
         mounted(){
 
-            Axios.get(this.$backendBaseUrl + 'api/verified/user').then(res => {
+            // Axios.get(this.$backendBaseUrl + 'api/verified/user').then(res => {
+            //
+            //     console.log(res.data);
+            //     this.options = res.data;
+            //
+            // }).catch(err => {
+            //
+            //     console.log(err.response);
+            //
+            // });
 
-                console.log(res.data);
-                this.options = res.data;
+            const user = JSON.parse(localStorage.getItem('user'))
 
-            }).catch(err => {
-
-                console.log(err.response);
-
-            });
-
-            this.users.push(JSON.parse(localStorage.getItem('user')));
+            this.users.push(user);
+            this.emails.push(user.email);
+            this.options.push(user.email);
+            // this.options.push('You');
 
         },
 
@@ -308,22 +317,29 @@
         methods: {
 
             addTag (newTag) {
-                const tag = {
-                    name: newTag
-                }
-                console.log(tag);
-                this.options.push(tag);
-                this.users.push(tag);
+                // const tag = {
+                //     name: newTag
+                // }
+                console.log(newTag);
+                this.options.push(newTag);
+                // this.users.push(tag);
+                this.emails.push(newTag);
 
                 // this.users_id = this.users.map(value => value.id)
             },
 
-            addMoreProduct(id){
+            addMoreUser(email){
+
+
+            },
+
+            addMoreProduct(email){
 
                 this.products.push({
                     name: '',
                     price: '',
-                    user_id: id
+                    // user_id: id,
+                    email: email,
                 });
 
             },
@@ -338,14 +354,14 @@
 
                 const the = this
 
-                if  (this.products.length < this.users.length){
+                if  (this.products.length < this.emails.length){
 
-                    this.users.forEach(function (val) {
+                    this.emails.forEach(function (email) {
 
                         the.products.push({
                             name: '',
                             price: '',
-                            user_id: val.id
+                            email: email
                         });
                     })
                 }
@@ -357,7 +373,7 @@
 
                     return false;
 
-                } if (this.users.length < 2){
+                } if (this.emails.length < 2){
 
                       this.error_message = 'You need to add at least a user that will be dining with you..';
                       this.showError({message: 'You need to add at least a user that will be dining with you..'});
@@ -375,24 +391,25 @@
 
                 const the = this;
 
-                if  (this.splits.length < this.users.length) {
-
-                    this.splits = [];
-
-                    this.users.forEach(function (user) {
-
-                        the.splits.push({
-
-                            name: user.name,
-                            user_id: user.id,
-                            percentage: '',
-                            amount: ''
-
-                        })
-
-                    });
-
-                }
+                // if  (this.splits.length < this.emails.length) {
+                //
+                //     this.splits = [];
+                //
+                //     this.emails.forEach(function (email) {
+                //
+                //         the.splits.push({
+                //
+                //             // name: user.name,
+                //             // user_id: user.id,
+                //             email: email,
+                //             percentage: '',
+                //             amount: ''
+                //
+                //         })
+                //
+                //     });
+                //
+                // }
 
                 //I try to strip the products that doesnt have a price or name in the object
 
@@ -423,52 +440,52 @@
 
                 }
 
-                const user_ids = [];
-                const product_users_ids = [];
+                //check the user ids and product ids
 
-                var checkUserProducts = function(products, users) {
+                const product_emails = [];
+
+                var checkUserProducts = function(products) {
 
                     products.forEach(function(o){
 
-                        product_users_ids.push(o['user_id']);
-
-                    });
-                    users.forEach(function(user){
-
-                        user_ids.push(user['id']);
+                        product_emails.push(o['email']);
 
                     });
                 };
 
-                checkUserProducts(this.products, this.users);
+
+                checkUserProducts(this.products);
 
 
                 Array.prototype.diff = function(a) {
                     return this.filter(function(i) {return a.indexOf(i) < 0;});
                 };
 
-                const strim_user = [...new Set(user_ids)];
-                const strim_product_user = [...new Set(product_users_ids)];
+                const strim_emails = [...new Set(this.emails)];
+                const strim_product_emails = [...new Set(product_emails)];
 
-                var arrayRemove = function (arr, value) {
 
-                    return arr.filter(function(ele){
-                        return ele != value;
-                    });
+                // var arrayRemove = function (arr, value) {
+                //
+                //     return arr.filter(function(ele){
+                //         return ele != value;
+                //     });
+                //
+                // }
 
-                }
+
                 var removeProductWithoutUser = function(products) {
                     products.forEach(function(product, index){
 
-                        if (!strim_user.includes(product['user_id'])){
+                        if (!strim_emails.includes(product['email'])){
 
                             the.products.splice(index, 1);
 
-                            strim_product_user.forEach(function(id, index){
+                            strim_product_emails.forEach(function(email, index){
 
-                                if (id === product['user_id']){
+                                if (email === product['user_id']){
 
-                                    strim_product_user.splice(index, 1);
+                                    strim_product_emails.splice(index, 1);
                                 }
 
 
@@ -512,8 +529,7 @@
 
                 }
 
-                // I validate if each user have atleast a product in the products array
-
+                // I validate if each user (email) have atleast a product in the products array
 
 
                 const arraysEqual = function(arr1, arr2) {
@@ -528,20 +544,46 @@
                 };
 
 
-                if (!arraysEqual(strim_user, strim_product_user)){
+                if (!arraysEqual(strim_emails, strim_product_emails)){
 
                     this.error_message = 'Pls make sure every user has atleast a product..';
                     this.showError({message: 'Pls make sure every user has atleast a product..'});
-
 
                     return false;
 
                 }
 
-
-
-
                 this.error_message = '';
+
+
+                const split_emails = [];
+
+                this.splits.forEach((split) => {
+
+                    split_emails.push(split.email);
+
+                });
+
+                if  (!arraysEqual(this.emails, split_emails)){
+
+                    this.splits = [];
+
+                    this.emails.forEach(function (email) {
+
+                        the.splits.push({
+
+                            email: email,
+                            percentage: '',
+                            amount: ''
+
+                        })
+
+                    });
+
+                    console.log(split_emails);
+                    console.log(this.emails)
+
+                }
 
                 return true;
 
@@ -604,7 +646,7 @@
 
                 }).catch(err => {
 
-                    // console.log(err.response);
+                    console.log(err.response);
 
                 })
 

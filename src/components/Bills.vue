@@ -30,13 +30,16 @@
 
                 <div class="col-lg-4 col-md-6" v-for="bill in my_bills" >
                     <div class="card ks-card-widget ks-widget-payment-card-rate-details main" >
-                        <h5 :class="{'btn-primary': bill.user.id === user_id, 'btn-warning': bill.user.id !== user_id }" class="card-header" >
-                            {{bill.name}}
 
-                            <button :class="{'text-primary': bill.user.id === user_id, 'text-warning': bill.user.id !== user_id }"
-                                    class="btn  btn-round btn-white pull-right" @click="viewBillInfoModal(bill)" >
-                                View Info</button>
-                        </h5>
+                            <h5 :class="{'btn-primary': bill.user.email === user_email, 'btn-warning': bill.user.email !== user_email }" class="card-header" >
+                                {{bill.name}}
+
+                                <button :class="{'text-primary': bill.user.email === user_email, 'text-warning': bill.user.email !== user_email }"
+                                        class="btn  btn-round btn-white pull-right" @click="viewBillPage(bill)" >
+                                    View Info</button>
+                            </h5>
+
+
                         <div class="card-block">
 
                             <table class="table ks-payment-card-rate-details-table">
@@ -63,7 +66,7 @@
                                     <td class="ks-currency">
                                         Number of users
                                     </td>
-                                    <td class="ks-amount">{{bill.users.length}}</td>
+                                    <td class="ks-amount">{{bill.splits.length}}</td>
                                 </tr>
                                 <tr>
                                     <td class="ks-currency">
@@ -73,19 +76,21 @@
                                 </tr>
                                 <div v-for="split in bill.splits">
 
-                                     <tr v-if="bill.user.id !== user_id && user_id === split.user_id && split.settled === 1">
+
+                                    <tr v-if="bill.user.id !== user_id && user_email === split.email && split.settled === 1">
                                         <td class="ks-currency">
                                             You have paid your Debt of <b>N{{split.amount}}</b> to
                                         </td>
                                         <td class="ks-amount"> {{bill.user.name}} </td>
                                     </tr>
 
-                                    <tr v-if="bill.user.id !== user_id && user_id === split.user_id && split.settled === 0" >
+
+                                    <tr v-if="bill.user.id !== user_id && user_email === split.email && split.settled === 0" >
                                         <td class="ks-currency">
                                             You are owning <b>{{bill.user.name}}, </b>
                                         </td>
                                         <td class="ks-amount pull-right">N{{split.amount | formatMoney}}</td>
-                                        <span @click="payDebt(split.amount, split.user_id, split.id)" class="btn btn-sm btn-success">Pay</span>
+                                        <span @click="payDebt(split.amount, split.email, split.id)" class="btn btn-xl btn-success">Pay</span>
                                     </tr>
                                 </div>
 
@@ -112,6 +117,7 @@
 
     import Axios from 'axios'
     import Swal from 'sweetalert'
+    import router from '../router'
 
     export default {
         name: "Bills",
@@ -123,7 +129,10 @@
 
                 my_bills: [],
                 bill_loaded: false,
-                user_id: parseInt(localStorage.getItem('user_id'))
+                user_id: parseInt(localStorage.getItem('user_id')),
+                user_email: JSON.parse(localStorage.getItem('user')).email
+
+
             }
         },
 
@@ -151,8 +160,24 @@
                 this.$emit('view-bill-info', bill)
             },
 
+            viewBillPage(bill){
 
-            payDebt(amount, user_id, split_id) {
+                let code_email = '';
+
+                bill.splits.forEach((split) => {
+
+                    if (split.email === this.user_email){
+
+                        code_email = split.code
+
+                    }
+                })
+
+                router.push({name: 'MyBill', params: {code: code_email}});
+            },
+
+
+            payDebt(amount, email, split_id) {
 
                 var the = this;
 
@@ -173,7 +198,7 @@
                         ]
                     },
                     callback: function(response){
-                        Swal({ text: 'Please wait while we transfer funds to the user you to the plan ...', buttons: false });
+                        Swal({ text: 'Please wait while we transfer the funds to the user ...', buttons: false });
 
                         // console.log(response);
 
